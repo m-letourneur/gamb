@@ -40,9 +40,11 @@ def get_outcome_from_file(h_team, a_team, season, league):
     filename = league + '_' + season + '.csv'
     df = pd.read_csv(path_root + '/data/' + filename)
     df = df.dropna()
+    print df.head()
     df = df[['HomeTeam', 'AwayTeam', 'FTR']]
     df = df[df['HomeTeam'] == h_team]
     df = df[df['AwayTeam'] == a_team]
+    print df.head()
     return df['FTR'].values[0]
 
 
