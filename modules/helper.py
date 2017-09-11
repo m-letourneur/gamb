@@ -18,12 +18,13 @@ def get_games_in_season(season, league):
     games_in_season = df.copy()
     dates_dt = df.copy()
     games_in_season = games_in_season[['HomeTeam', 'AwayTeam']]
-    dates_dt = dates_dt[['Date']]
-    dates_dt['Date'] = dates_dt['Date'].apply(
+    dates_dt = dates_dt['Date'].apply(
         lambda x: dt.datetime.strptime(str(x), '%d/%m/%y').date())
+    # dates_dt['Date'] = dates_dt['Date'].apply(
+    # lambda x: dt.datetime.strptime(str(x), '%d/%m/%y').date())
 
     games_in_season = games_in_season.values.tolist()
-    dates_dt = dates_dt.values[0].tolist()
+    dates_dt = (dates_dt.values).tolist()
 
     return games_in_season, dates_dt
 
@@ -47,7 +48,7 @@ def get_outcome_from_file(h_team, a_team, season, league):
 
 
 def get_week_nb_from_date(season, league, date):
-    # Convert the date into the past associated week number for the season, 
+    # Convert the date into the past associated week number for the season,
     # league
     return 0
 

@@ -30,13 +30,12 @@ if __name__ == '__main__':
     league = LEAGUE
     for season in SEASONS:
         games_in_season, dates_dt = get_games_in_season(season, league)
-        print zip(games_in_season, dates_dt)
-        for game, date_dt in zip(games_in_season, dates_dt):
+        for game, date_dt in list(zip(games_in_season, dates_dt)):
             game_inst = g.Game()
             game_inst(game, season, league, date_dt)
             features.append(game_inst.features)
             outcomes.append(game_inst.outcome)
-            print 'in'
+            # print 'in'
 
     # features and outcomes can now feed/train the model
 
