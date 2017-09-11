@@ -17,8 +17,9 @@ from modules.helper import get_games_in_season
 if __name__ == '__main__':
 
     # List of seasons used to build the model
-    SEASONS = ['2013_2014', '2014_2015']
-    LEAGUE = 'F1'
+    # SEASONS = ['2013_2014', '2014_2015']
+    SEASONS = ['2016_2017']    
+    LEAGUE = 'E0'
 
     # Construct the features/outcomes
     # features = pd.DataFrame()
@@ -29,17 +30,22 @@ if __name__ == '__main__':
     league = LEAGUE
     for season in SEASONS:
         games_in_season, dates_dt = get_games_in_season(season, league)
+        print zip(games_in_season, dates_dt)
         for game, date_dt in zip(games_in_season, dates_dt):
             game_inst = g.Game()
             game_inst(game, season, league, date_dt)
             features.append(game_inst.features)
             outcomes.append(game_inst.outcome)
+            print 'in'
 
     # features and outcomes can now feed/train the model
 
     # Normalization step
     # Standardization issues??? need to pickle the standardizer???
-    features_normalized = normalize(features)
+    # features_normalized = normalize(features)
+    features_normalized = features
+    print features_normalized
+
     # Launch training
     learner = LinearSVC()
     learner.fit(features_normalized, outcomes)

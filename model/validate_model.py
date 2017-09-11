@@ -23,8 +23,8 @@ def _get_games_in_season(season, league):
 if __name__ == '__main__':
 
     # List of seasons used to build the model
-    SEASONS = ['2015_2016']
-    LEAGUE = 'F1'
+    SEASONS = ['2016_2017']
+    LEAGUE = 'E0'
 
     # Construct the features/outcomes
     # features = pd.DataFrame()

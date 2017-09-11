@@ -57,9 +57,9 @@ class Game(object):
         current_ranking = rk.Ranking()
         current_ranking(self.season, self.league, self.date_dt)
         # Home team
-        rank_h = current_ranking.table
+        rank_h = current_ranking.table[self.hteam]['position']
         # Away team
-        rank_a = current_ranking.table
+        rank_a = current_ranking.table[self.ateam]['position']
 
         ranks = [rank_h, rank_a]
         return ranks

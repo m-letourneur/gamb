@@ -56,3 +56,4 @@ if __name__ == '__main__':
     # games_in_season, dates_dt = get_games_in_season('2013_2014', 'F1')
     # print games_in_season, dates_dt
     print get_outcome_from_file('Bordeaux', 'Paris SG', '2012_2013', 'F1')
+    print get_games_in_season('2012_2013', 'F1')
