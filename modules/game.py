@@ -34,6 +34,14 @@ class Game(object):
         features = []
 
         features.extend(self._get_rank())
+        features.extend(self._get_points())
+        features.extend(self._get_last_outcomes())
+        features.extend(self._get_won())
+        features.extend(self._get_draw())
+        features.extend(self._get_lost())
+        features.extend(self._get_goalsdiff())
+        features.extend(self._get_goalsfor())
+        features.extend(self._get_goalsagainst())
 
         return features
 
@@ -64,6 +72,100 @@ class Game(object):
         ranks = [rank_h, rank_a]
         return ranks
 
+    def _get_points(self):
+        # Get the current rank in the league for both teams
+        current_ranking = rk.Ranking()
+        current_ranking(self.season, self.league, self.date_dt)
+        # Home team
+        points_h = current_ranking.table[self.hteam]['points']
+        # Away team
+        points_a = current_ranking.table[self.ateam]['points']
+
+        points = [points_h, points_a]
+        return points
+
+    def _get_last_outcomes(self):
+        # Get the lastest outcomes for both teams
+        current_ranking = rk.Ranking()
+        current_ranking(self.season, self.league, self.date_dt)
+        # Home team
+        last_h = current_ranking.table[self.hteam]['former'][0]
+        # Away team
+        last_a = current_ranking.table[self.ateam]['former'][0]
+
+        return map(lambda x: convert_outcome2bin(x), [last_h, last_a])
+
+    def _get_won(self):
+        # Get the nb of wins for both teams
+        current_ranking = rk.Ranking()
+        current_ranking(self.season, self.league, self.date_dt)
+        # Home team
+        last_h = current_ranking.table[self.hteam]['won']
+        # Away team
+        last_a = current_ranking.table[self.ateam]['won']
+
+        return [last_h, last_a]
+
+    def _get_draw(self):
+        # Get the nb of draws for both teams
+        current_ranking = rk.Ranking()
+        current_ranking(self.season, self.league, self.date_dt)
+        # Home team
+        last_h = current_ranking.table[self.hteam]['draw']
+        # Away team
+        last_a = current_ranking.table[self.ateam]['draw']
+
+        return [last_h, last_a]
+
+    def _get_lost(self):
+        # Get the lost games for both teams
+        current_ranking = rk.Ranking()
+        current_ranking(self.season, self.league, self.date_dt)
+        # Home team
+        last_h = current_ranking.table[self.hteam]['lost']
+        # Away team
+        last_a = current_ranking.table[self.ateam]['lost']
+
+        return [last_h, last_a]
+
+    def _get_goalsdiff(self):
+        # Get the goals difference score for both teams
+        current_ranking = rk.Ranking()
+        current_ranking(self.season, self.league, self.date_dt)
+        # Home team
+        goalsdiff_h = current_ranking.table[self.hteam]['goalsdiff']
+        # Away team
+        goalsdiff_a = current_ranking.table[self.ateam]['goalsdiff']
+
+        return [goalsdiff_h, goalsdiff_a]
+
+    def _get_goalsfor(self):
+        # Get the goals for score for both teams
+        current_ranking = rk.Ranking()
+        current_ranking(self.season, self.league, self.date_dt)
+        # Home team
+        goalsfor_h = current_ranking.table[self.hteam]['goalsfor']
+        # Away team
+        goalsfor_a = current_ranking.table[self.ateam]['goalsfor']
+
+        return [goalsfor_h, goalsfor_a]
+
+    def _get_goalsagainst(self):
+        # Get the goals against score for both teams
+        current_ranking = rk.Ranking()
+        current_ranking(self.season, self.league, self.date_dt)
+        # Home team
+        goalsagainst_h = current_ranking.table[self.hteam]['goalsagainst']
+        # Away team
+        goalsagainst_a = current_ranking.table[self.ateam]['goalsagainst']
+
+        return [goalsagainst_h, goalsagainst_a]
+
+    def _get_nb_goals_scored_previous_game(self):
+        # Get last game stats for both teams
+        # goals or other stats...
+        return []
+
     def _get_final_rank_previous_season(self):
         # Get the final rank for the 2 previous seasons
         return []
@@ -84,9 +186,22 @@ class Game(object):
         # Get 5, 10 last outcomes for both teams when home
         return []
 
-    def _get_nb_goals_scored_previous_game(self):
-        # Get last game stats for both teams
-        # goals or other stats...
-        return []
+
+def convert_outcome2int(s):
+    if s == 'W' or s=='H':
+        return 1
+    elif s == 'D':
+        return 0
+    else:
+        return -1
 
 
+def convert_outcome2bin(s):
+    if s == 'W' or s=='H':
+        return 1
+    else:
+        return 0
+
+if __name__ == '__main__':
+    print map(lambda x: convert_outcome2int(x), ['H', 'A', 'D'])
+    print map(lambda x: convert_outcome2bin(x), ['H', 'A', 'D'])

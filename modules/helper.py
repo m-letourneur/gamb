@@ -44,7 +44,14 @@ def get_outcome_from_file(h_team, a_team, season, league):
     df = df[['HomeTeam', 'AwayTeam', 'FTR']]
     df = df[df['HomeTeam'] == h_team]
     df = df[df['AwayTeam'] == a_team]
-    return df['FTR'].values[0]
+    return map(lambda x: binarize_outcome(x), df['FTR'].values[0])
+
+def binarize_outcome(s):
+    # The target variable is set to be the win of the Home Team
+    if s=='W' or s=='H':
+        return 1
+    else:
+        return 0
 
 
 def get_week_nb_from_date(season, league, date):

@@ -1,0 +1,16 @@
+### To Do ###
+
+Pickle the features!
+See pickle issue with model
+
+Normalize features and pickle standardizer
+
+
+___
+
+# Ideas
+
+
+Merge seasons.
+
+

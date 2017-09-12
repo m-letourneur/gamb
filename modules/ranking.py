@@ -49,7 +49,6 @@ class Ranking(object):
 
     def _get_teams_in_season(self):
         filename = self.league + '_' + self.season + '.csv'
-        # e = "Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,FTR,HTHG,HTAG,HTR"
         df = pd.read_csv(path_root + '/data/' + filename)
         return list(df.loc[:, 'HomeTeam'].unique())
 
@@ -63,7 +62,7 @@ class Ranking(object):
             date_g = dt.datetime.strptime(
                 df.loc[ind, 'Date'], '%d/%m/%y').date()
             if date_g > self.date_dt:
-                print 'out'
+                # print 'out'
                 break
             else:
                 # print 'in'
