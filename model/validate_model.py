@@ -50,7 +50,7 @@ if __name__ == '__main__':
     features_normalized = features
     # Predicting using model
     p_file = open(basedir + '/stored_models/linearSVC_' +
-                  LEAGUE + '.p', 'wr')
+                  LEAGUE + '.p', 'rb')
     model = load(p_file)
     predicted = model.fit(features_normalized)
 

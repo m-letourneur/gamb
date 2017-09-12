@@ -38,22 +38,22 @@ if __name__ == '__main__':
             # print 'in'
 
     # features and outcomes can now feed/train the model
-    print outcomes
-    # # Normalization step
-    # # Standardization issues??? need to pickle the standardizer???
-    # # features_normalized = normalize(features)
-    # features_normalized = features
+    # print outcomes
+    # Normalization step
+    # Standardization issues??? need to pickle the standardizer???
+    # features_normalized = normalize(features)
+    features_normalized = features
     # print features_normalized
 
-    # # Launch training
-    # learner = LinearSVC()
-    # learner.fit(features_normalized, outcomes)
-    # out_file = open(basedir + '/stored_models/linearSVC_' +
-    #                 LEAGUE + '.p', 'wr')
-    # dump(learner, out_file)
+    # Launch training
+    learner = LinearSVC()
+    learner.fit(features_normalized, outcomes)
+    out_file = open(basedir + '/stored_models/linearSVC_' +
+                    LEAGUE + '.p', 'wr')
+    dump(learner, out_file)
 
-    # # Training score
-    # print learner.score(features_normalized, outcomes)
-    # predicted = learner.predict(features_normalized)
-    # print confusion_matrix(outcomes, predicted)
+    # Training score
+    print learner.score(features_normalized, outcomes)
+    predicted = learner.predict(features_normalized)
+    print confusion_matrix(outcomes, predicted)
     os.system('say "Finished"')
