@@ -1,8 +1,8 @@
 ### To Do ###
 
+Get table excluding GAME
+Size feature previous games?
 Normalize features and pickle standardizer
-
-
 ___
 
 # Ideas

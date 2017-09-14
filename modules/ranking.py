@@ -28,7 +28,7 @@ class Ranking(object):
         self.date_dt = date_dt
         self.table = self._get_table()
 
-    def _get_empty_table(self):
+    def _set_empty_table(self):
         table = {}
         teams = self._get_teams_in_season()
         # print teams
@@ -55,19 +55,15 @@ class Ranking(object):
     def _get_table(self):
         filename = self.league + '_' + self.season + '.csv'
         df = pd.read_csv(path_root + '/data/' + filename)
-        self._get_empty_table()
-        # print self.table
+        self._set_empty_table()
         table = None
         for ind in df.index:
             date_g = dt.datetime.strptime(
                 df.loc[ind, 'Date'], '%d/%m/%y').date()
-            if date_g > self.date_dt:
-                # print 'out'
+            if date_g >= self.date_dt:
                 break
             else:
-                # print 'in'
                 self._update_table(df.iloc[ind])
-                # print self.table
                 table = self.table
 
         return table
@@ -143,7 +139,7 @@ class Ranking(object):
 if __name__ == '__main__':
     season = '2016_2017'
     league = 'E0'
-    date_dt = dt.date(year=2017, month=7, day=31)
+    date_dt = dt.date(year=2016, month=9, day=25)
     rank_ = Ranking()
     # print "output"
     # print rank_.season
