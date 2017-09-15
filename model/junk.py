@@ -54,3 +54,4 @@ if __name__ == '__main__':
     # print df.head()
     print df.outcomes.describe()
     print df.outcomes.sum()
+    
