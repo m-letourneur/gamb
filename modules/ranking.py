@@ -9,24 +9,42 @@ import datetime as dt
 
 class Ranking(object):
 
-    def __init__(self):
+    def __init__(self, season, league):
         """
         Table template:
             {
-                "Bastia" : 14
             }
         """
-        self.season = None
-        self.league = None
+        self.season = season
+        self.league = league
         self.date_dt = None
-        self.table = None
+        self.table = self._get_empty_table()
 
     def __call__(self, season, league, date_dt):
 
         self.season = season
         self.league = league
         self.date_dt = date_dt
-        self.table = self._get_table()
+        self._set_table()
+
+    def _get_empty_table(self):
+        table = {}
+        teams = self._get_teams_in_season()
+        # print teams
+        for team in teams:
+            table[team] = {
+                'points': 0,
+                'position': 0,
+                'won': 0,
+                'lost': 0,
+                'draw': 0,
+                'goalsfor': 0,
+                'goalsagainst': 0,
+                'goalsdiff': 0,
+                'former': [-1, -1, -1, -1, -1],
+                'played': 0
+            }
+        return table
 
     def _set_empty_table(self):
         table = {}
@@ -42,7 +60,7 @@ class Ranking(object):
                 'goalsfor': 0,
                 'goalsagainst': 0,
                 'goalsdiff': 0,
-                'former': [],
+                'former': [-1, -1, -1, -1, -1],
                 'played': 0
             }
         self.table = table
@@ -52,11 +70,10 @@ class Ranking(object):
         df = pd.read_csv(path_root + '/data/' + filename)
         return list(df.loc[:, 'HomeTeam'].unique())
 
-    def _get_table(self):
+    def _set_table(self):
         filename = self.league + '_' + self.season + '.csv'
         df = pd.read_csv(path_root + '/data/' + filename)
         self._set_empty_table()
-        table = None
         for ind in df.index:
             date_g = dt.datetime.strptime(
                 df.loc[ind, 'Date'], '%d/%m/%y').date()
@@ -64,16 +81,12 @@ class Ranking(object):
                 break
             else:
                 self._update_table(df.iloc[ind])
-                table = self.table
-
-        return table
 
     def _update_table(self, game):
         self._update_points(game)
         self._update_played(game)
         self._update_goals(game)
         self._update_positions()
-        # print self.table
 
     def _update_points(self, game):
         hteam = game['HomeTeam']
@@ -123,15 +136,14 @@ class Ranking(object):
             ateam]['goalsfor'] - self.table[ateam]['goalsagainst']
 
     def _update_positions(self):
-        # Sort everything out
-        # print 'update pos'
+        # Sort everything out - sort position based on points, goals difference
+        # and goals for current features
         list_2_sort = []
         for team in self.table.keys():
             list_2_sort.append([team, self.table[team]['points'], self.table[
                                team]['goalsdiff'], self.table[team]['goalsfor']])
 
         sorted_list = sorted(list_2_sort, key=lambda x: (-x[1], -x[2], -x[3]))
-        # print sorted_list
         for ind in range(len(sorted_list)):
             team = sorted_list[ind][0]
             self.table[team]['position'] = ind + 1
@@ -139,9 +151,7 @@ class Ranking(object):
 if __name__ == '__main__':
     season = '2016_2017'
     league = 'E0'
-    date_dt = dt.date(year=2016, month=9, day=25)
-    rank_ = Ranking()
-    # print "output"
-    # print rank_.season
+    date_dt = dt.date(year=2016, month=8, day=20)
+    rank_ = Ranking(season, league)
     rank_(season, league, date_dt)
     print rank_.table

@@ -7,17 +7,20 @@ sys.path.insert(0, path_root)
 from modules import game as g
 from modules import ranking as rk
 import pandas as pd
-from sklearn.preprocessing import normalize
+import numpy as np
+from sklearn.preprocessing import normalize, StandardScaler
 from sklearn.svm import LinearSVC
 from sklearn.metrics import confusion_matrix, roc_auc_score, roc_curve
+from sklearn.model_selection import cross_val_predict
 from pickle import dump, load
 import matplotlib.pyplot as plt
 
 from modules.helper import get_games_in_season
 
-SAVE_FEATURES_OUTCOMES = True
-UNPACK_FEATURES_OUTCOMES = False
-LEARN = True
+SAVE_FEATURES_OUTCOMES = False
+UNPACK_FEATURES_OUTCOMES = True
+LEARN = False
+PICKLE_STANDARDIZER = True
 
 if __name__ == '__main__':
 
@@ -25,7 +28,7 @@ if __name__ == '__main__':
     # SEASONS = ['2013_2014', '2014_2015']
     SEASONS = ['2016_2017']
     LEAGUE = 'E0'
-    MODEL_VERSION = '_' + SEASONS[0] + '_' + 'correction'
+    MODEL_VERSION = '_' + SEASONS[0]
 
     # Construct the features/outcomes
     features = []
@@ -43,14 +46,11 @@ if __name__ == '__main__':
         for season in SEASONS:
             games_in_season, dates_dt = get_games_in_season(season, league)
             for game, date_dt in list(zip(games_in_season, dates_dt)):
-                try:
-                    game_inst = g.Game()
-                    game_inst(game, season, league, date_dt)
+                game_inst = g.Game()
+                game_inst(game, season, league, date_dt)
+                if not(len(np.unique(game_inst.features[4:9])) == 1):
                     features.append(game_inst.features)
                     outcomes.append(game_inst.outcome[0])
-                except Exception as e:
-                    print e
-                    print 'Ranking is None'
 
     if SAVE_FEATURES_OUTCOMES:
         features_pkl = open(
@@ -66,9 +66,17 @@ if __name__ == '__main__':
     # features and outcomes can now feed/train the model
     # print outcomes
     # Normalization step
-    # Standardization issues??? need to pickle the standardizer???
-    # features_normalized = normalize(features)
-    features_normalized = features
+    if PICKLE_STANDARDIZER:
+        scaler = StandardScaler()
+        scaler.fit(features)
+        features_standardized = scaler.transform(features)
+        features_normalized = features_standardized
+        out_file = open(basedir + '/stored_standardizers/standard_' +
+                        LEAGUE + '_' + MODEL_VERSION + '.pkl', 'wb')
+        dump(scaler, out_file)
+        out_file.close()
+    else:
+        features_normalized = features
 
     # Launch training
     if LEARN:
@@ -94,4 +102,10 @@ if __name__ == '__main__':
     plt.figure()
     plt.plot(fpr, tpr)
     plt.show()
-    os.system('say "Finished"')
+    # os.system('say "Finished"')
+
+    # Cross-validation
+    cv_learner = LinearSVC()
+    cv_predictions = cross_val_predict(
+        cv_learner, features_normalized, outcomes, cv=3)
+    print cv_predictions
