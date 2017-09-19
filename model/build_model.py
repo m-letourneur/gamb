@@ -91,6 +91,22 @@ if __name__ == '__main__':
                         LEAGUE + '_' + MODEL_VERSION + '.pkl', 'rb')
         learner = load(out_file)
 
+    # Cross-validation
+    cv_learner = LinearSVC()
+    cv_predictions = cross_val_predict(
+        cv_learner, features_normalized, outcomes, cv=3)
+    print cv_predictions
+    perf_file.write("--- Validation set ---")
+    perf_file.write("Accuracy = " 
+        + str(cv_learner.score(features_normalized, outcomes))
+        + "\n")
+    perf_file.write("AUROC = " 
+        + str(roc_auc_score(outcomes, cv_learner.decision_function(features_normalized)))
+        + "\n")
+    perf_file.write("Confusion matrix = " 
+        + str(confusion_matrix(outcomes, cv_predictions))
+        + "\n")
+
     # Training score
     print learner.score(features_normalized, outcomes)
     predicted = learner.predict(features_normalized)
@@ -98,15 +114,25 @@ if __name__ == '__main__':
     print roc_auc_score(outcomes, learner.decision_function(features_normalized))
     fpr, tpr, thresholds = roc_curve(
         outcomes, learner.decision_function(features_normalized))
+
+    perf_file = open(basedir + '/stored_models/perf_linearSVC_' +
+                    LEAGUE + '_' + MODEL_VERSION + '.txt', 'wb')
+    perf_file.write("--- Training set ---\n\n")
+    perf_file.write("Accuracy = " 
+        + str(learner.score(features_normalized, outcomes))
+        + "\n")
+    perf_file.write("AUROC = " 
+        + str(roc_auc_score(outcomes, learner.decision_function(features_normalized)))
+        + "\n")
+    perf_file.write("Confusion matrix = " 
+        + str(confusion_matrix(outcomes, predicted))
+        + "\n")
+    perf_file.close()
+
     os.system('say "Almost Finished"')
     plt.figure()
     plt.plot(fpr, tpr)
     plt.show()
-    # os.system('say "Finished"')
 
-    # Cross-validation
-    cv_learner = LinearSVC()
-    cv_predictions = cross_val_predict(
-        cv_learner, features_normalized, outcomes, cv=3)
-    print cv_predictions
-    
+    os.system('say "Finished"')
+
