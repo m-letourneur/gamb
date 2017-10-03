@@ -1,6 +1,6 @@
 import ranking as rk
 import datetime as dt
-from helper import get_outcome_from_file
+from helper import get_outcome_from_file, get_odd_from_file
 
 features_labels = ['rank_h', 'rank_a', 'points_h', 'points_a', 'outcome_h_1', 'outcome_h_2',
                    'outcome_h_3', 'outcome_h_4', 'outcome_h_5', 'outcome_a_1', 'outcome_a_2',
@@ -21,6 +21,7 @@ class Game(object):
         self.date_dt = None
         self.features = None
         self.outcome = None
+        self.odd_h = None
 
     def __call__(self, game, season, league, date_dt):
 
@@ -34,6 +35,8 @@ class Game(object):
         self.features = self._get_all_features()
 
         self.outcome = self._get_outcome_of_game()
+
+        self.odd_h = self._get_extrafeat_of_game()
 
     def _get_all_features(self):
         # Get the several features
@@ -62,6 +65,16 @@ class Game(object):
             # Game has not been played yet: prediction expected
             return 'P'
 
+    def _get_extrafeat_of_game(self):
+
+        if self.date_dt < dt.date.today():
+            # historical data to lookup in right csv
+            odd = get_odd_from_file(
+                self.hteam, self.ateam, self.season, self.league)
+            return odd
+        else:
+            # Game has not been played yet: prediction expected
+            return 'P'
     """
     Feature getters
     """

@@ -5,8 +5,9 @@ path_root = os.path.dirname(basedir)
 sys.path.insert(0, path_root)
 
 from modules import game as g
-from modules.helper import get_games_in_season
+from modules.helper import get_games_in_season, odd_score
 import pandas as pd
+import numpy as np
 from sklearn.preprocessing import normalize, StandardScaler
 from sklearn.svm import LinearSVC
 from sklearn.metrics import confusion_matrix, classification_report, roc_auc_score, roc_curve
@@ -25,6 +26,7 @@ if __name__ == '__main__':
     # Construct the features/outcomes of the validation set
     features = []
     outcomes = []
+    odd_h = []
 
     if UNPACK_FEATURES_OUTCOMES:
         features_pkl = open(
@@ -42,6 +44,7 @@ if __name__ == '__main__':
                 game_inst(game, season, league, date_dt)
                 features.append(game_inst.features)
                 outcomes.append(game_inst.outcome[0])
+                odd_h.append(game_inst.odd_h)
 
     # features and outcomes can now feed/train the model
     # Normalization step
@@ -63,19 +66,43 @@ if __name__ == '__main__':
     predicted = model.predict(features_normalized)
     print 'predicted = ' + str(predicted)
     print '\noutcomes = ' + str(outcomes) + '\n'
+
     # Validation score
+    predicted = model.predict(features_normalized)
+    perf_file = open(basedir + '/stored_models/perf_linearSVC_' +
+                     LEAGUE + '_' + MODEL_VERSION + '.txt', 'a')
+    perf_file.write("\n--- Validation set ---\n\n")
+    perf_file.write("Accuracy = "
+                    + str(model.score(features_normalized, outcomes))
+                    + "\n")
+    perf_file.write("AUROC = "
+                    + str(roc_auc_score(outcomes,
+                                        model.decision_function(features_normalized)))
+                    + "\n")
+    perf_file.write("Confusion matrix = "
+                    + str(confusion_matrix(outcomes, predicted))
+                    + "\n\n")
+    perf_file.close()
+
     print model.score(features_normalized, outcomes)
     print model.decision_function(features_normalized)
     print roc_auc_score(outcomes, model.decision_function(features_normalized))
     fpr, tpr, thresholds = roc_curve(
         outcomes, model.decision_function(features_normalized))
-    os.system('say "Almost Finished"')
-    plt.figure()
-    plt.plot(fpr, tpr)
-    plt.show()
+    # os.system('say "Almost Finished"')
+    # plt.figure()
+    # plt.plot(fpr, tpr)
+    # plt.show()
     print confusion_matrix(outcomes, predicted)
     print classification_report(outcomes, predicted, labels=['0', '1'],
                                 target_names=['DL', 'W'])
 
-    
+    print odd_h
+    print np.sum(np.multiply(outcomes,odd_h))
+    print np.sum(np.multiply(predicted,odd_h))
+    print np.sum(outcomes)
+    print np.sum(predicted)
+
+    print('odd score = ' + str(odd_score(outcomes, predicted, odd_h)))
+
     os.system('say "Finished"')

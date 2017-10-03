@@ -10,23 +10,23 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import normalize, StandardScaler
 from sklearn.svm import LinearSVC
-from sklearn.metrics import confusion_matrix, roc_auc_score, roc_curve
+from sklearn.metrics import confusion_matrix, roc_auc_score, roc_curve, accuracy_score
 from sklearn.model_selection import cross_val_predict
 from pickle import dump, load
 import matplotlib.pyplot as plt
 
 from modules.helper import get_games_in_season
 
-SAVE_FEATURES_OUTCOMES = False
-UNPACK_FEATURES_OUTCOMES = True
-LEARN = False
+SAVE_FEATURES_OUTCOMES = True
+UNPACK_FEATURES_OUTCOMES = False
+LEARN = True
 PICKLE_STANDARDIZER = True
 
 if __name__ == '__main__':
 
     # List of seasons used to build the model
     # SEASONS = ['2013_2014', '2014_2015']
-    SEASONS = ['2016_2017']
+    SEASONS = ['2015_2016','2016_2017']
     LEAGUE = 'E0'
     MODEL_VERSION = '_' + SEASONS[0]
 
@@ -96,16 +96,19 @@ if __name__ == '__main__':
     cv_predictions = cross_val_predict(
         cv_learner, features_normalized, outcomes, cv=3)
     print cv_predictions
-    perf_file.write("--- Validation set ---")
-    perf_file.write("Accuracy = " 
-        + str(cv_learner.score(features_normalized, outcomes))
-        + "\n")
-    perf_file.write("AUROC = " 
-        + str(roc_auc_score(outcomes, cv_learner.decision_function(features_normalized)))
-        + "\n")
-    perf_file.write("Confusion matrix = " 
-        + str(confusion_matrix(outcomes, cv_predictions))
-        + "\n")
+    perf_file = open(basedir + '/stored_models/perf_linearSVC_' +
+                     LEAGUE + '_' + MODEL_VERSION + '.txt', 'wb')
+    perf_file.write("--- Cross-validation set ---")
+    perf_file.write("\nAccuracy = "
+                    + str(accuracy_score(cv_predictions, outcomes))
+                    + "\n")
+    # perf_file.write("AUROC = "
+                    # + str(roc_auc_score(outcomes,
+                    #                     cv_learner.decision_function(features_normalized)))
+                    # + "\n")
+    perf_file.write("Confusion matrix = "
+                    + str(confusion_matrix(outcomes, cv_predictions))
+                    + "\n\n")
 
     # Training score
     print learner.score(features_normalized, outcomes)
@@ -115,18 +118,17 @@ if __name__ == '__main__':
     fpr, tpr, thresholds = roc_curve(
         outcomes, learner.decision_function(features_normalized))
 
-    perf_file = open(basedir + '/stored_models/perf_linearSVC_' +
-                    LEAGUE + '_' + MODEL_VERSION + '.txt', 'wb')
     perf_file.write("--- Training set ---\n\n")
-    perf_file.write("Accuracy = " 
-        + str(learner.score(features_normalized, outcomes))
-        + "\n")
-    perf_file.write("AUROC = " 
-        + str(roc_auc_score(outcomes, learner.decision_function(features_normalized)))
-        + "\n")
-    perf_file.write("Confusion matrix = " 
-        + str(confusion_matrix(outcomes, predicted))
-        + "\n")
+    perf_file.write("Accuracy = "
+                    + str(learner.score(features_normalized, outcomes))
+                    + "\n")
+    perf_file.write("AUROC = "
+                    + str(roc_auc_score(outcomes,
+                                        learner.decision_function(features_normalized)))
+                    + "\n")
+    perf_file.write("Confusion matrix = "
+                    + str(confusion_matrix(outcomes, predicted))
+                    + "\n")
     perf_file.close()
 
     os.system('say "Almost Finished"')
@@ -135,4 +137,3 @@ if __name__ == '__main__':
     plt.show()
 
     os.system('say "Finished"')
-

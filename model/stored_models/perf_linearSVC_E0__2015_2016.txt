@@ -1,0 +1,43 @@
+--- Cross-validation set ---
+Accuracy = 0.573482428115
+Confusion matrix = [[221 114]
+ [153 138]]
+
+--- Training set ---
+
+Accuracy = 0.667731629393
+AUROC = 0.713791865415
+Confusion matrix = [[246  89]
+ [119 172]]
+
+--- Validation set ---
+
+Accuracy = 0.575
+AUROC = 0.606060606061
+Confusion matrix = [[14  8]
+ [ 9  9]]
+
+
+--- Validation set ---
+
+Accuracy = 0.575
+AUROC = 0.606060606061
+Confusion matrix = [[14  8]
+ [ 9  9]]
+
+
+--- Validation set ---
+
+Accuracy = 0.575
+AUROC = 0.606060606061
+Confusion matrix = [[14  8]
+ [ 9  9]]
+
+
+--- Validation set ---
+
+Accuracy = 0.575
+AUROC = 0.606060606061
+Confusion matrix = [[14  8]
+ [ 9  9]]
+

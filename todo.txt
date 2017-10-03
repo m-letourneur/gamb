@@ -1,15 +1,14 @@
 ### To Do ###
 
->> Cross-validation
-display scores and save them in a file for cv and training
 >> try other learners
+>> use decision function to compute the odd score
 ___
 
 # Ideas
 
 Mod: Merge seasons in learning, compare models
 Feat: add best striker rank at league level
-
+Feat: home team shots last games
 ___
 
 Games, at the beginning of the season with no ranking data are removed from learning process.
